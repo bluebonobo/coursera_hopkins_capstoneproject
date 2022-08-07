@@ -12,9 +12,9 @@ knitr::opts_chunk$set(echo = FALSE)
 ## The Application
 The Shiny application developed for the Capstone assignment predicts the next word in a sentence. The user enters a series of word and the model predicts the next word using a Natural Language Statistical Model. The user interface is shown below. A documentation tab presents the content also available in this presentation
 
-Need to upload latest on github and use download link for the screnshot of homage here
+*For first lookup, expect slow response time to allow on time load of ngrams files*
 
-![](https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstoneproject/main/shinyapp/CapstoneShinyApp/WWW/homepage.png)
+![](https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstoneproject/main/shinyapp/CapstoneShinyApp/WWW/Asset%201.png)
 
 
 ## The Model
@@ -31,10 +31,12 @@ To build the model, we use a corpus of blogs, news and twitter entires provided 
 - Given the number of words in the input text, we look up the most frequent bigram, trigram or 4gram
 - If the ngram lookup does not return a match, we call the (n-1)gram lookup. This strategy is refered to as **backoff**. Meaning the highest order ngram lookup is called and if no match is identified, the algorithm backs off to the next lower order ngram and so on.
 
-## Resources
-- The Slidify presentation pitch can be found [here](https://bluebonobo.github.io/coursera_hopkins_developingdataproducts/)
-- The Shiny application can be found [here](https://bluebonobo.shinyapps.io/week4shinyapp)
-- The source code repository can be found [here](https://github.com/bluebonobo/coursera_hopkins_capstone/)
+## Resources and Considerations
+- The Shiny application can be found [here](https://bluebonobo.shinyapps.io/CapstoneProjectShinyApp/)
+- The Source code repository can be found [here](https://github.com/bluebonobo/coursera_hopkins_capstoneproject)
+- This presentation can be found [here](https://rpubs.com/bluebonobo/capstoneproject)
+
+Note that in order to deploy the application on ShinyApps.io, I had to use the ngrams files built on a sample corpus as the full ngrams files would create a out of memory error in ShinyApps.io. This error is widely reported in the forums and most students worked around this by using sample corpus. The complete .rds ngrams files can be found in my github repository
 
 
 

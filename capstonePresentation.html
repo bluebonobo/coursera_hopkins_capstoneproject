@@ -3153,9 +3153,9 @@ slide:not(.current) .plotly.html-widget{
 
 <p>The Shiny application developed for the Capstone assignment predicts the next word in a sentence. The user enters a series of word and the model predicts the next word using a Natural Language Statistical Model. The user interface is shown below. A documentation tab presents the content also available in this presentation</p>
 
-<p>Need to upload latest on github and use download link for the screnshot of homage here</p>
+<p><em>For first lookup, expect slow response time to allow on time load of ngrams files</em></p>
 
-<img src='https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstoneproject/main/shinyapp/CapstoneShinyApp/WWW/homepage.png' title=''/>
+<img src='https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstoneproject/main/shinyapp/CapstoneShinyApp/WWW/Asset%201.png' title=''/>
 
 </article></slide><slide class=""><hgroup><h2>The Model</h2></hgroup><article  id="the-model">
 
@@ -3175,13 +3175,15 @@ slide:not(.current) .plotly.html-widget{
 <li>If the ngram lookup does not return a match, we call the (n-1)gram lookup. This strategy is refered to as <strong>backoff</strong>. Meaning the highest order ngram lookup is called and if no match is identified, the algorithm backs off to the next lower order ngram and so on.</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Resources</h2></hgroup><article  id="resources">
+</article></slide><slide class=""><hgroup><h2>Resources and Considerations</h2></hgroup><article  id="resources-and-considerations">
 
 <ul>
-<li>The Slidify presentation pitch can be found <a href='https://bluebonobo.github.io/coursera_hopkins_developingdataproducts/' title=''>here</a></li>
-<li>The Shiny application can be found <a href='https://bluebonobo.shinyapps.io/week4shinyapp' title=''>here</a></li>
-<li>The source code repository can be found <a href='https://github.com/bluebonobo/coursera_hopkins_capstone/' title=''>here</a></li>
+<li>The Shiny application can be found <a href='https://bluebonobo.shinyapps.io/CapstoneProjectShinyApp/' title=''>here</a></li>
+<li>The Source code repository can be found <a href='https://github.com/bluebonobo/coursera_hopkins_capstoneproject' title=''>here</a></li>
+<li>This presentation can be found <a href='https://rpubs.com/bluebonobo/capstoneproject' title=''>here</a></li>
 </ul>
+
+<p>Note that in order to deploy the application on ShinyApps.io, I had to use the ngrams files built on a sample corpus as the full ngrams files would create a out of memory error in ShinyApps.io. This error is widely reported in the forums and most students worked around this by using sample corpus. The complete .rds ngrams files can be found in my github repository</p>
 
 <p>Thank you - Bluebonobo</p></article></slide>
 
