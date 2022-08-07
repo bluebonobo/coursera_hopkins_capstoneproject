@@ -1,0 +1,178 @@
+---
+title: "Data Science Specialization - Capstone Week2"
+author: "bluebonobo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show'}
+library(knitr)       # used to make kable tables
+library(tm)          # text mining package
+library(ggplot2)     # used for plots
+library(dplyr)       # Manipulate data frames
+library(sentimentr)    # Remove Profanity
+library(quanteda)      # Text Analysis and Corpus Managment leading library
+library(LaF)           # need to install Large Ascii Files library install.packages('LaF') to sample source files
+library(wordcloud)
+# library(SnowballC)   # applies Porter's stemmming algorithm (discussed later) 
+# library(magrittr)    # allows pipe operator
+# library(tidytext)    # tidy text for plots
+library(devtools)
+library(gridExtra)
+```
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show'}
+# Setting up the working directory same as this source file
+# this.dir <- dirname(parent.frame(2)$ofile)
+# setwd(this.dir)
+# print(getwd())
+```
+
+# Outline
+
+This document explains the major features of the data and summarize how I plan to create a prediction algorithm and Shiny app using the knowledge acquired during the specialization.
+
+
+# Exploratory Analysis
+
+For performance and convenience of this week's presentation, I have extracted a random subset of the files provided (blogs, news and twitter files) for the capstone project. We will also focus on the English language files. In order to address the full data set, we will need to optimize performance and libraries used. I have only used the tm library so far but I am planning to switch in the coming weeks. 
+
+The code below randomly selects **1/1000** of lines of each <filename> and create an associated sample-<filename>.txt
+
+``` {r, eval=F, echo=T} 
+# sub sample dataset : create sample files which contain sample_percentge of original files
+sample_percentage = 0.001 
+lisfil <- list.files("./dataset/final/en_US") #Replace E:\\Data with your directory name
+for (i in 1:length(list.files("./dataset/final/en_US"))) {
+  total_nblines <- determine_nlines(paste("./dataset/final/en_US/",lisfil[i], sep=""))
+  sample <- sample_lines(paste("./dataset/final/en_US/",lisfil[i], sep=""), n=round(sample_percentage*total_nblines), nlines = total_nblines)
+  output_file <- file(paste("./dataset/final/en_US/sample/sample_",lisfil[i], sep=""), "wb")
+  writeBin( paste(sample, collapse = "\n"), output_file )
+  close(output_file)
+```
+
+For each file, we build a VCorpus object, we clean the VCorpus by removing whitepaces, convert all to lower case, remove English stop words, remove punctuation, remove numbers, remove profanity and stem. We then tokenzie and finally create a DocumentTermMatrix.
+
+We show the top 10 words and a wordcloud for each file below.
+
+
+## Blogs File Analysis
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show'}
+# ============================== Exploratory Analysis BLOGS Data
+
+# # Getting the data
+working_english_corpus_blogs  <- VCorpus(DirSource("./dataset/final/en_US/sample/blogs_sample"), readerControl = list(language="lat")) 
+
+print ("========= Cleaning the Corpus")
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, stripWhitespace)
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, content_transformer(tolower))
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, removeWords, stopwords("english"))
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, removePunctuation)
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, content_transformer(removeNumbers))
+working_english_corpus_blogs <- tm_map(working_english_corpus_blogs, content_transformer(stemDocument), language = "english")
+
+print ("========= Remove Profanity")
+
+# print ("========= Tokenize Corpus")
+# tokenized_working_english_corpus_blogs <- function(x) tokenize_word(working_english_corpus_blogs)
+
+print ("========= Create Term Document Matrix")
+dtm_blogs <- DocumentTermMatrix(working_english_corpus_blogs)
+freq_blogs <- sort(colSums(as.matrix(dtm_blogs)), decreasing=TRUE)
+```
+
+The Sample Blogs file we are going to analyze consists of **`r lapply(working_english_corpus_blogs[[1]][1],length)` lines** and **`r dim(dtm_blogs)[2]` terms**. Review of the document term matrix here `r inspect(dtm_blogs)`
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show', fig.width=4, fig.height=4}
+top10_blogs <- head(freq_blogs,10)
+bottom10_blogs <-tail(freq_blogs,10)
+barplot(top10_blogs, main="Blogs top10 words frequency", xlab = "Names", ylab="Frequency", horiz = TRUE, las = 2)
+# wordcloud
+wordcloud(names(freq_blogs), freq_blogs, max.words=100, random.order=FALSE, colors=brewer.pal(8, "Accent"), scale=c(7,.4), rot.per=0)
+```
+
+## News File Analysis
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show'}
+# ============================== Exploratory Analysis NEWS Data
+
+# # Getting the data
+working_english_corpus_news  <- VCorpus(DirSource("./dataset/final/en_US/sample/news_sample"), readerControl = list(language="lat")) 
+
+print ("========= Cleaning the Corpus")
+working_english_corpus_news <- tm_map(working_english_corpus_news, stripWhitespace)
+working_english_corpus_news <- tm_map(working_english_corpus_news, content_transformer(tolower))
+working_english_corpus_news <- tm_map(working_english_corpus_news, removeWords, stopwords("english"))
+working_english_corpus_news <- tm_map(working_english_corpus_news, removePunctuation)
+working_english_corpus_news <- tm_map(working_english_corpus_news, content_transformer(removeNumbers))
+working_english_corpus_news <- tm_map(working_english_corpus_news, content_transformer(stemDocument), language = "english")
+
+print ("========= Remove Profanity")
+
+# print ("========= Tokenize Corpus")
+# tokenized_working_english_corpus_blogs <- function(x) tokenize_word(working_english_corpus_blogs)
+
+print ("========= Create Term Document Matrix")
+dtm_news <- DocumentTermMatrix(working_english_corpus_news)
+freq_news <- sort(colSums(as.matrix(dtm_news)), decreasing=TRUE)
+```
+
+The Sample Blogs file we are going to analyze consists of **`r lapply(working_english_corpus_news[[1]][1],length)` lines** and **`r dim(dtm_news)[2]` terms**. Review of the document term matrix here `r inspect(dtm_news)`
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show', fig.width=4, fig.height=4}
+top10_news <- head(freq_news,10)
+bottom10_news <-tail(freq_news,10)
+barplot(top10_news, main="News top10 words frequency", xlab = "Names", ylab="Frequency", horiz = TRUE, las = 2)
+# wordcloud
+wordcloud(names(freq_news), freq_news, max.words=100, random.order=FALSE, colors=brewer.pal(8, "Accent"), scale=c(7,.4), rot.per=0)
+```
+
+## Twitter File Analysis
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show'}
+# ============================== Exploratory Analysis Twitter Data
+
+# # Getting the data
+working_english_corpus_twitter  <- VCorpus(DirSource("./dataset/final/en_US/sample/twitter_sample"), readerControl = list(language="lat")) 
+
+print ("========= Cleaning the Corpus")
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, stripWhitespace)
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, content_transformer(tolower))
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, removeWords, stopwords("english"))
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, removePunctuation)
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, content_transformer(removeNumbers))
+working_english_corpus_twitter <- tm_map(working_english_corpus_twitter, content_transformer(stemDocument), language = "english")
+
+print ("========= Remove Profanity")
+
+# print ("========= Tokenize Corpus")
+# tokenized_working_english_corpus_blogs <- function(x) tokenize_word(working_english_corpus_blogs)
+
+print ("========= Create Term Document Matrix")
+dtm_twitter <- DocumentTermMatrix(working_english_corpus_twitter)
+freq_twitter <- sort(colSums(as.matrix(dtm_twitter)), decreasing=TRUE)
+```
+
+The Sample Blogs file we are going to analyze consists of **`r lapply(working_english_corpus_twitter[[1]][1],length)` lines** and **`r dim(dtm_twitter)[2]` terms**. Review of the document term matrix here `r inspect(dtm_twitter)`
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='show', fig.width=4, fig.height=4}
+top10_twitter <- head(freq_twitter,10)
+bottom10_twitter <-tail(freq_twitter,10)
+barplot(top10_twitter, main="Twitter top10 words frequency", xlab = "Names", ylab="Frequency", horiz = TRUE, las = 2)
+# wordcloud
+wordcloud(names(freq_twitter), freq_twitter, max.words=100, random.order=FALSE, colors=brewer.pal(8, "Accent"), scale=c(7,.4), rot.per=0)
+```
+
+# Planing for Prediction Algorithm and Shiny App
+
+For the prediction part of the assignment, I intend to build an ngrams model for 3,4,5 words. The algorithm will predict the next word based on the first 3,4 words provided in the App. 
+
+The course instructions for modelling call for building a model to handle unseen n-grams. I am not clear on how to proceed on this at this point. 
+
+The shiny app will have one text input and a submit button. Upon submission, a list of conadidate next words will be provided alongside an indication of confidence.

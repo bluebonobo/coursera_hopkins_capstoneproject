@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Documentation</title>
+</head>
+<body>
+
+<h1>The Application</h1>
+
+<ul>
+<li>The Shiny application developed for the Capstone assignment predicts the next word in a sentence. The user enters a series of word and the model predicts the next word using a Natural Language Statistical Model. To build the model, we use a corpus of blogs, news and twitter entires provided as part of the assignment.</li>
+<li>
+<li>The Slidify presentation pitch can be found <a href="https://bluebonobo.github.io/coursera_hopkins_developingdataproducts/">here</a> </li>
+<li>The Shiny application can be found <a href="https://bluebonobo.shinyapps.io/week4shinyapp/">here</a> </li>
+<li>The source code repository can be found <a href="https://github.com/bluebonobo/coursera_hopkins_capstone/">here</a> </li>
+</ul>
+
+<h1>NLP Model and Algorithm</h1>
+
+The Model
+<ul>
+<li>We have cleaned up the blogs, news and twitter entries to remove stop words, profanity</li>
+<li>The text resources are loaded in a VCorpus object which is then tokenized. We tokenize the corpus in bigrams, trigrams and 4grams</li>
+<li>We then build a DocumentTerm Matrix and calculate frequencies of each gram</li>
+<li>The Ngram analysis was introduced in Week2 and we decide to pursue along this line by building a statistical model based on a n-grams frequencies. This approach is descirbed in <a href="https://towardsai.net/p/nlp/how-do-language-models-predict-the-next-word">see this article</a> or <a href="https://towardsdatascience.com/sentence-generation-with-n-gram-21a5eef36a1b">this article</a></li>
+</ul>
+
+The Algorithm
+<ul>
+<li>Given the number of words in the input text, we look up the most frequent bigram, trigram or 4gram</li>
+<li>If the ngram lookup does not return a match, we call the (n-1)gram lookup. This strategy is refered to as backoff. Meaning the highest order ngram lookup is called and if no match is identified, the algorithm backs off to the next lower order ngram and so on</li>
+</ul>
+
+<h1>Application Structure, Source code</h1>
+
+The Shinny Application is structured as follows
+<ul>
+<li>1 server.R file</li>
+<li>1 ui.R file</li>
+<li>1 helpers.R file</li>
+<li>1 documentationTab.html file which contains this page</li>
+<li>1 folder named WWW containing icons files used by the ui.R file</li>
+<li>1 folder named ngramsTables containing ngrams files</li>
+</ul>
+
+Note that the code used to build the ngramsFiles is available in <a href="https://github.com/bluebonobo/coursera_hopkins_capstone/">my github repository</a> </li> in the file names week7.R
+
+<h1>Further considerations</h1>
+
+<ul>
+<li>Performance to build the 3grams, 4grams files is poor</li>
+</ul>
+
+</body>
+</html>
