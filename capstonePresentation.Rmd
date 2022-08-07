@@ -14,7 +14,7 @@ The Shiny application developed for the Capstone assignment predicts the next wo
 
 Need to upload latest on github and use download link for the screnshot of homage here
 
-![](https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstone/3d235736541668249e9915483416ddd17b38f451/shinyapp/CapstoneShinyApp/WWW/coursera-logo-thumb.png)
+![](https://raw.githubusercontent.com/bluebonobo/coursera_hopkins_capstoneproject/main/shinyapp/CapstoneShinyApp/WWW/homepage.png)
 
 
 ## The Model
