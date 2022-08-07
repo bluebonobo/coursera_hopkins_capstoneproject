@@ -1,27 +1,11 @@
 library(tidyverse)
 library(stringr)
 
-# readRDS(bigramTable, "./ngramsTables/bigramTable.rds")
 bigramTable <- readRDS("./ngramsTables/bigramTable.rds")
 trigramTable <- readRDS("./ngramsTables/trigramTable.rds")
 fourgramTable <- readRDS("./ngramsTables/fourgramTable.rds")
 
 print(dim(bigramTable))
-
-bigramWorking <- function(input_words){
-  num <- length(input_words)
-
-  # out <- as.character(slice_tail(filter(bigramTable, word1==input_words[num]), n=1))
-  # out <- as.character(filter(bigramTable, word1==input_words[num])[1,2])
-
-  filter(bigramTable, word1==input_words[num]) %>%
-    # top_n(1, n) %>%
-    slice_tail() %>%
-    filter(row_number() == 1L) %>%
-    select(num_range("word", 2)) %>%
-    as.character() -> out
-  ifelse(out =="character(0)", "?", return(out))
-}
 
 bigram <- function(input_words){
   num <- length(input_words)
@@ -66,14 +50,8 @@ predict <- function(input){
   # Create a dataframe
   # input <- data_frame(text = input)
   input <- tibble(text = input)
-  # Clean the Inpput
-  # replace_reg <- "[^[:alpha:][:space:]]*"
-  # input <- input %>%
-  #   mutate(text = str_replace_all(text, replace_reg, ""))
-  # Find word count, separate words, lower case
   input_count <- str_count(input, boundary("word"))
   input_words <- unlist(str_split(input, boundary("word")))
-  # input_words <- tolower(input_words)
   # Calls lookup function based on number of words entered. Calls fourgram for 3 words or more
   out <- ifelse(input_count==0,"",
                 ifelse(input_count == 1, bigram(input_words), 
